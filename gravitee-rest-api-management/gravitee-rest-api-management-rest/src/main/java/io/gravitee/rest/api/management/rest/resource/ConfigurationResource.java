@@ -30,6 +30,7 @@ import io.gravitee.rest.api.model.permissions.RolePermission;
 import io.gravitee.rest.api.model.permissions.RolePermissionAction;
 import io.gravitee.rest.api.service.NotifierService;
 import io.gravitee.rest.api.service.configuration.application.ApplicationTypeService;
+import io.gravitee.rest.api.service.configuration.flow.FlowService;
 import io.gravitee.rest.api.service.notification.Hook;
 import io.gravitee.rest.api.service.notification.PortalHook;
 import io.swagger.annotations.Api;
@@ -64,6 +65,9 @@ public class ConfigurationResource {
     @Inject
     private ApplicationTypeService applicationTypeService;
 
+    @Inject
+    private FlowService flowService;
+
     @GET
     @Path("/hooks")
     @ApiOperation("Get the list of available hooks")
@@ -77,10 +81,10 @@ public class ConfigurationResource {
     @Path("notifiers")
     @ApiOperation(value = "List of available notifiers")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "List of notifiers", response = NotifierEntity.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Internal server error")})
+        @ApiResponse(code = 200, message = "List of notifiers", response = NotifierEntity.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     @Permissions({
-            @Permission(value = RolePermission.ENVIRONMENT_NOTIFICATION, acls = RolePermissionAction.READ)
+        @Permission(value = RolePermission.ENVIRONMENT_NOTIFICATION, acls = RolePermissionAction.READ)
     })
     public List<NotifierEntity> getNotifiers() {
         return notifierService.list(NotificationReferenceType.PORTAL, PortalNotificationDefaultReferenceId.DEFAULT.name());
@@ -158,8 +162,8 @@ public class ConfigurationResource {
     public Response getEnabledApplicationTypes() {
         ApplicationTypesEntity enabledApplicationTypes = applicationTypeService.getEnabledApplicationTypes();
         return Response
-                .ok(enabledApplicationTypes.getData())
-                .build();
+            .ok(enabledApplicationTypes.getData())
+            .build();
     }
 
     @Path("entrypoints")
@@ -185,6 +189,17 @@ public class ConfigurationResource {
     @Path("custom-user-fields")
     public CustomUserFieldsResource getCustomUserFields() {
         return resourceContext.getResource(CustomUserFieldsResource.class);
+    }
+
+    @GET
+    @Path("flow/schema")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFlowSchema() {
+        String schema = flowService.getSchema();
+        return Response
+            .ok(schema)
+            .build();
+
     }
 
 }

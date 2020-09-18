@@ -73,4 +73,5 @@ public class CategoryResourceTest extends AbstractResourceTest {
 
         assertEquals(response.readEntity(String.class), OK_200, response.getStatus());
     }
+
 }
